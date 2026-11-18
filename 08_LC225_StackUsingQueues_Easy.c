@@ -1,28 +1,62 @@
-struct ListNode *getIntersectionNode(struct ListNode *headA, struct ListNode *headB)
+#include <stdlib.h>
+#include <stdbool.h>
+
+typedef struct {
+    int q1[100];
+    int q2[100];
+    int f1, r1;
+    int f2, r2;
+} MyStack;
+
+MyStack* myStackCreate()
 {
-    struct ListNode *p1 = headA;
-    struct ListNode *p2 = headB;
+    MyStack* obj = malloc(sizeof(MyStack));
 
-    while(p1 != p2)
+    obj->f1 = 0;
+    obj->r1 = -1;
+    obj->f2 = 0;
+    obj->r2 = -1;
+
+    return obj;
+}
+
+void myStackPush(MyStack* obj, int x)
+{
+    obj->q2[++obj->r2] = x;
+
+    while(obj->f1 <= obj->r1)
     {
-        if(p1 == NULL)
-        {
-            p1 = headB;
-        }
-        else
-        {
-            p1 = p1->next;
-        }
-
-        if(p2 == NULL)
-        {
-            p2 = headA;
-        }
-        else
-        {
-            p2 = p2->next;
-        }
+        obj->q2[++obj->r2] = obj->q1[obj->f1++];
     }
 
-    return p1;
+    obj->f1 = 0;
+    obj->r1 = -1;
+
+    while(obj->f2 <= obj->r2)
+    {
+        obj->q1[++obj->r1] = obj->q2[obj->f2++];
+    }
+
+    obj->f2 = 0;
+    obj->r2 = -1;
+}
+
+int myStackPop(MyStack* obj)
+{
+    return obj->q1[obj->f1++];
+}
+
+int myStackTop(MyStack* obj)
+{
+    return obj->q1[obj->f1];
+}
+
+bool myStackEmpty(MyStack* obj)
+{
+    return obj->f1 > obj->r1;
+}
+
+void myStackFree(MyStack* obj)
+{
+    free(obj);
 }
